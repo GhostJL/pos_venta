@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+import 'package:pos_venta/presentation/screens/sign_in/widgets/sign_in_form.dart';
 
 class SignInScreen extends StatelessWidget {
   static const name = '/sign-in-screen';
@@ -7,8 +9,29 @@ class SignInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sign in')),
-      body: Center(child: Text('Sign in body')),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Welcome Back!',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Sign in to continue',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 40),
+                const SignInForm(),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

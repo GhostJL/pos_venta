@@ -31,4 +31,9 @@ class UserRepositoryImpl extends UserRepository {
   Future<void> updateUser(User user) {
     return datasource.updateUser(user);
   }
+
+  @override
+  Future<User?> signIn(String email, String password) {
+    return datasource.signIn(email, password);
+  }
 }

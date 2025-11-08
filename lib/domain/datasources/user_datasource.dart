@@ -6,4 +6,5 @@ abstract class UserDatasource {
   Future<void> insertUser(User user);
   Future<void> updateUser(User user);
   Future<void> deleteUser(int id);
+  Future<User?> signIn(String email, String password);
 }

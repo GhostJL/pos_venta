@@ -37,4 +37,10 @@ class IsarUserDatasource extends UserDatasource {
     final isar = await isarDatasource.db;
     await isar.writeTxn(() => isar.users.put(user));
   }
+
+  @override
+  Future<User?> signIn(String email, String password) async {
+    final isar = await isarDatasource.db;
+    return await isar.users.filter().usernameEqualTo(email).passwordHashEqualTo(password).findFirst();
+  }
 }
