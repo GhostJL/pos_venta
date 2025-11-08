@@ -1,40 +1,35 @@
-import 'package:pos_venta/domain/models/role_model.dart';
+import 'package:pos_venta/domain/datasources/role_datasource.dart';
+import 'package:pos_venta/domain/entities/role_entity.dart';
 import 'package:pos_venta/domain/repositories/role_repository.dart';
-import 'package:pos_venta/infrastructure/datasources/hive_role_datasource.dart';
-import 'package:pos_venta/infrastructure/mappers/role_mapper.dart';
 
-class RoleRepositoryImpl extends RoleRepository {
-  final HiveRoleDatasource datasource;
+/// ⚙️ Implementación concreta del RoleRepository.
+/// Se encarga de usar el/los RoleDataSource para cumplir los contratos de Domain.
+class RoleRepositoryImpl implements RoleRepository {
+  final RoleDataSource dataSource;
 
-  RoleRepositoryImpl(this.datasource);
+  RoleRepositoryImpl({required this.dataSource});
 
   @override
-  Future<void> deleteRole(int id) {
-    return datasource.deleteRole(id);
+  Future<void> createOrUpdateRole(RoleEntity role) async {
+    // El repositorio delega la lógica de guardado/actualización al datasource.
+    await dataSource.saveRole(role);
   }
 
   @override
-  Future<List<RoleModel>> getAllRoles() async {
-    final roles = await datasource.getAllRoles();
-    return roles.map((role) => RoleMapper.roleToRoleModel(role)).toList();
+  Future<RoleEntity?> getRole(int id) {
+    // El repositorio delega la obtención al datasource.
+    return dataSource.getRoleById(id);
   }
 
   @override
-  Future<RoleModel?> getRoleById(int id) async {
-    final role = await datasource.getRoleById(id);
-    if (role == null) return null;
-    return RoleMapper.roleToRoleModel(role);
+  Future<List<RoleEntity>> getRoles() {
+    // El repositorio delega la obtención de todos los roles al datasource.
+    return dataSource.getAllRoles();
   }
 
   @override
-  Future<void> insertRole(RoleModel role) {
-    final roleEntity = RoleMapper.roleModelToRole(role);
-    return datasource.insertRole(roleEntity);
-  }
-
-  @override
-  Future<void> updateRole(RoleModel role) {
-    final roleEntity = RoleMapper.roleModelToRole(role);
-    return datasource.updateRole(roleEntity);
+  Future<void> removeRole(int id) {
+    // El repositorio delega la eliminación al datasource.
+    return dataSource.deleteRole(id);
   }
 }

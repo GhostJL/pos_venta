@@ -1,10 +1,11 @@
-import 'package:pos_venta/domain/entities/user.dart';
+// domain/datasources/user_datasource.dart
+import '../../domain/entities/user_entity.dart';
 
-abstract class UserDatasource {
-  Future<List<User>> getAllUsers();
-  Future<User?> getUserById(int id);
-  Future<void> insertUser(User user);
-  Future<void> updateUser(User user);
+/// 📝 Interfaz/Contrato para interactuar con la fuente de datos de usuarios (e.g., Hive).
+abstract class UserDataSource {
+  Future<List<UserEntity>> getAllUsers();
+  Future<UserEntity?> getUserById(int id);
+  Future<UserEntity?> getUserByUsername(String username);
+  Future<void> saveUser(UserEntity user);
   Future<void> deleteUser(int id);
-  Future<User?> signIn(String email, String password);
 }

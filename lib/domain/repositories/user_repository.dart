@@ -1,10 +1,13 @@
-import 'package:pos_venta/domain/models/user_model.dart';
+// domain/repositories/user_repository.dart
+import '../../domain/entities/user_entity.dart';
 
+/// 🧱 Interfaz/Contrato para el Repositorio de Usuarios.
+/// Define las operaciones de negocio sobre la entidad User.
 abstract class UserRepository {
-  Future<List<UserModel>> getAllUsers();
-  Future<UserModel?> getUserById(int id);
-  Future<void> insertUser(UserModel user);
-  Future<void> updateUser(UserModel user);
-  Future<void> deleteUser(int id);
-  Future<UserModel?> signIn(String email, String password);
+  Future<List<UserEntity>> getUsers();
+  Future<UserEntity?> getUserDetails(int id);
+  Future<UserEntity?> login(
+      String username, String passwordHash); // Ejemplo de lógica de negocio
+  Future<void> createOrUpdateUser(UserEntity user);
+  Future<void> removeUser(int id);
 }

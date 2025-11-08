@@ -1,60 +1,43 @@
-import 'package:pos_venta/domain/models/user_model.dart';
-import 'package:pos_venta/domain/repositories/role_repository.dart';
+import 'package:pos_venta/domain/datasources/user_datasource.dart';
+import 'package:pos_venta/domain/entities/user_entity.dart';
 import 'package:pos_venta/domain/repositories/user_repository.dart';
-import 'package:pos_venta/infrastructure/datasources/hive_user_datasource.dart';
-import 'package:pos_venta/infrastructure/mappers/user_mapper.dart';
 
-class UserRepositoryImpl extends UserRepository {
-  final HiveUserDatasource datasource;
-  final RoleRepository roleRepository;
+/// ⚙️ Implementación concreta del UserRepository.
+class UserRepositoryImpl implements UserRepository {
+  final UserDataSource dataSource;
 
-  UserRepositoryImpl(this.datasource, this.roleRepository);
+  UserRepositoryImpl({required this.dataSource});
 
   @override
-  Future<void> deleteUser(int id) {
-    return datasource.deleteUser(id);
+  Future<void> createOrUpdateUser(UserEntity user) {
+    return dataSource.saveUser(user);
   }
 
   @override
-  Future<List<UserModel>> getAllUsers() async {
-    final users = await datasource.getAllUsers();
-    final userModels = <UserModel>[];
+  Future<UserEntity?> getUserDetails(int id) {
+    return dataSource.getUserById(id);
+  }
 
-    for (final user in users) {
-      final role = await roleRepository.getRoleById(user.roleId);
-      userModels.add(UserMapper.userToUserModel(user, role));
+  @override
+  Future<List<UserEntity>> getUsers() {
+    return dataSource.getAllUsers();
+  }
+
+  @override
+  Future<void> removeUser(int id) {
+    return dataSource.deleteUser(id);
+  }
+
+  // Lógica de negocio de ejemplo definida en el Domain/Repository
+  @override
+  Future<UserEntity?> login(String username, String passwordHash) async {
+    final user = await dataSource.getUserByUsername(username);
+
+    // Nota: La verificación de hash debe hacerse aquí (en el Domain/Infrastructure).
+    // Usamos comparación directa por simplicidad, pero en producción usarías bcrypt, etc.
+    if (user != null && user.passwordHash == passwordHash) {
+      return user;
     }
-
-    return userModels;
-  }
-
-  @override
-  Future<UserModel?> getUserById(int id) async {
-    final user = await datasource.getUserById(id);
-    if (user == null) return null;
-
-    final role = await roleRepository.getRoleById(user.roleId);
-    return UserMapper.userToUserModel(user, role);
-  }
-
-  @override
-  Future<void> insertUser(UserModel userModel) {
-    final user = UserMapper.userModelToUser(userModel);
-    return datasource.insertUser(user);
-  }
-
-  @override
-  Future<void> updateUser(UserModel userModel) {
-    final user = UserMapper.userModelToUser(userModel);
-    return datasource.updateUser(user);
-  }
-
-  @override
-  Future<UserModel?> signIn(String email, String password) async {
-    final user = await datasource.signIn(email, password);
-    if (user == null) return null;
-
-    final role = await roleRepository.getRoleById(user.roleId);
-    return UserMapper.userToUserModel(user, role);
+    return null;
   }
 }

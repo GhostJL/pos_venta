@@ -1,9 +1,8 @@
-import 'package:pos_venta/domain/entities/role.dart';
+import 'package:pos_venta/domain/entities/role_entity.dart';
 
-abstract class RoleDatasource {
-  Future<List<Role>> getAllRoles();
-  Future<Role?> getRoleById(int id);
-  Future<void> insertRole(Role role);
-  Future<void> updateRole(Role role);
+abstract class RoleDataSource {
+  Future<List<RoleEntity>> getAllRoles();
+  Future<RoleEntity?> getRoleById(int id);
+  Future<void> saveRole(RoleEntity role);
   Future<void> deleteRole(int id);
 }

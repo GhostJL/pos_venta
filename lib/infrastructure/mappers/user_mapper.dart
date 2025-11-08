@@ -1,53 +1,38 @@
-import 'package:pos_venta/domain/entities/user.dart';
-import 'package:pos_venta/domain/models/role_model.dart';
-import 'package:pos_venta/infrastructure/mappers/role_mapper.dart';
-import 'package:pos_venta/domain/models/user_model.dart';
+import 'package:pos_venta/domain/entities/user_entity.dart';
+import 'package:pos_venta/infrastructure/models/user_model.dart';
 
+/// 🚀 Mapper para transformar entre UserEntity (Domain) y UserModel (Data/Hive).
 class UserMapper {
-  static UserModel fromMap(Map<String, dynamic> map) {
-    return UserModel(
-      id: map['id'],
-      username: map['username'],
-      passwordHash: map['passwordHash'],
-      pinCode: map['pinCode'],
-      role: map['role'] != null ? RoleMapper.fromMap(map['role']) : null,
-      status: map['status'],
-      createdAt: DateTime.parse(map['createdAt']),
+  /// Convierte UserModel (Data) a UserEntity (Domain).
+  static UserEntity toEntity(UserModel model) {
+    return UserEntity(
+      id: model.id,
+      username: model.username,
+      passwordHash: model.passwordHash,
+      pinCode: model.pinCode,
+      roleId: model.roleId,
+      status: model.status,
+      createdAt: model.createdAt,
     );
   }
 
-  static Map<String, dynamic> toMap(UserModel user) {
-    return {
-      'id': user.id,
-      'username': user.username,
-      'passwordHash': user.passwordHash,
-      'pinCode': user.pinCode,
-      'role': user.role != null ? RoleMapper.toMap(user.role!) : null,
-      'status': user.status,
-      'createdAt': user.createdAt.toIso8601String(),
-    };
+  /// Convierte una lista de UserModel a una lista de UserEntity.
+  static List<UserEntity> toEntityList(List<UserModel> models) {
+    return models.map((model) => toEntity(model)).toList();
   }
 
-  static User userModelToUser(UserModel userModel) {
-    return User()
-      ..id = userModel.id
-      ..username = userModel.username
-      ..passwordHash = userModel.passwordHash
-      ..pinCode = userModel.pinCode
-      ..roleId = userModel.role!.id!
-      ..status = userModel.status
-      ..createdAt = userModel.createdAt;
-  }
-
-  static UserModel userToUserModel(User user, RoleModel? role) {
+  /// Convierte UserEntity (Domain) a UserModel (Data/Hive).
+  static UserModel fromEntity(UserEntity entity) {
+    // Usamos el constructor del modelo para asegurar que todos los campos sean mapeados
     return UserModel(
-      id: user.id,
-      username: user.username,
-      passwordHash: user.passwordHash,
-      pinCode: user.pinCode,
-      role: role,
-      status: user.status,
-      createdAt: user.createdAt,
+      id: entity.id,
+      username: entity.username,
+      passwordHash: entity.passwordHash,
+      pinCode: entity.pinCode,
+      roleId: entity.roleId,
+      status: entity.status,
+      // Usar el .createdAt de la entidad para respetar el valor del dominio
+      createdAt: entity.createdAt,
     );
   }
 }
