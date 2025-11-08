@@ -1,11 +1,12 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 
 part 'role.g.dart';
 
-@collection
+@HiveType(typeId: 17)
 class Role {
-  Id? id;
+  @HiveField(0)
+  int? id;
 
-  @Index(unique: true)
+  @HiveField(1)
   late String name; // admin, cajero, gerente, etc.
 }

@@ -1,10 +1,10 @@
 import 'package:pos_venta/domain/models/supplier_model.dart';
 import 'package:pos_venta/domain/repositories/supplier_repository.dart';
-import 'package:pos_venta/infrastructure/datasources/isar_supplier_datasource.dart';
+import 'package:pos_venta/infrastructure/datasources/hive_supplier_datasource.dart';
 import 'package:pos_venta/infrastructure/mappers/supplier_mapper.dart';
 
 class SupplierRepositoryImpl extends SupplierRepository {
-  final IsarSupplierDatasource datasource;
+  final HiveSupplierDatasource datasource;
 
   SupplierRepositoryImpl(this.datasource);
 

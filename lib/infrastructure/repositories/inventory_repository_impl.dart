@@ -1,10 +1,10 @@
 import 'package:pos_venta/domain/models/inventory_model.dart';
 import 'package:pos_venta/domain/repositories/inventory_repository.dart';
-import 'package:pos_venta/infrastructure/datasources/isar_inventory_datasource.dart';
+import 'package:pos_venta/infrastructure/datasources/hive_inventory_datasource.dart';
 import 'package:pos_venta/infrastructure/mappers/inventory_mapper.dart';
 
 class InventoryRepositoryImpl extends InventoryRepository {
-  final IsarInventoryDatasource datasource;
+  final HiveInventoryDatasource datasource;
 
   InventoryRepositoryImpl(this.datasource);
 

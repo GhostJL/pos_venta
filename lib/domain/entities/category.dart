@@ -1,13 +1,15 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 
 part 'category.g.dart';
 
-@collection
+@HiveType(typeId: 5)
 class Category {
-  Id? id;
+  @HiveField(0)
+  int? id;
 
-  @Index(unique: true)
+  @HiveField(1)
   late String name;
 
+  @HiveField(2)
   String? description;
 }

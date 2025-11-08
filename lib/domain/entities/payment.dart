@@ -1,18 +1,21 @@
-import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/sale.dart';
+import 'package:hive/hive.dart';
 
 part 'payment.g.dart';
 
-@collection
+@HiveType(typeId: 18)
 class Payment {
-  Id? id;
+  @HiveField(0)
+  int? id;
 
+  @HiveField(1)
   late String type; // efectivo, tarjeta, etc.
 
+  @HiveField(2)
   late double amount;
 
+  @HiveField(3)
   DateTime createdAt = DateTime.now();
 
-  @Backlink(to: 'payments')
-  final sale = IsarLink<Sale>();
+  @HiveField(4)
+  late int saleId;
 }

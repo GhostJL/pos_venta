@@ -1,9 +1,9 @@
-import 'package:pos_venta/domain/entities/inventory_movement.dart';
+import 'package:pos_venta/domain/models/inventory_movement_model.dart';
 
 abstract class InventoryMovementRepository {
-  Future<List<InventoryMovement>> getAllInventoryMovements();
-  Future<InventoryMovement?> getInventoryMovementById(int id);
-  Future<void> insertInventoryMovement(InventoryMovement inventoryMovement);
-  Future<void> updateInventoryMovement(InventoryMovement inventoryMovement);
+  Future<List<InventoryMovementModel>> getAllInventoryMovements();
+  Future<InventoryMovementModel?> getInventoryMovementById(int id);
+  Future<void> insertInventoryMovement(InventoryMovementModel inventoryMovement);
+  Future<void> updateInventoryMovement(InventoryMovementModel inventoryMovement);
   Future<void> deleteInventoryMovement(int id);
 }

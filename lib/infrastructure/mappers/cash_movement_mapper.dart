@@ -1,29 +1,27 @@
-import 'package:pos_venta/domain/entities/cash_movement.dart';
 import 'package:pos_venta/domain/models/cash_movement_model.dart';
 
 class CashMovementMapper {
-  static CashMovementModel cashMovementToCashMovementModel(
-      CashMovement cashMovement) {
+  static CashMovementModel fromMap(Map<String, dynamic> map) {
     return CashMovementModel(
-      id: cashMovement.id,
-      cashSessionId: cashMovement.cashSessionId,
-      userId: cashMovement.userId,
-      type: cashMovement.type,
-      amount: cashMovement.amount,
-      reason: cashMovement.reason,
-      createdAt: cashMovement.createdAt,
+      id: map['id'],
+      cashSessionId: map['cashSessionId'],
+      userId: map['userId'],
+      type: map['type'],
+      amount: map['amount'],
+      reason: map['reason'],
+      createdAt: DateTime.parse(map['createdAt']),
     );
   }
 
-  static CashMovement cashMovementModelToCashMovement(
-      CashMovementModel cashMovementModel) {
-    return CashMovement()
-      ..id = cashMovementModel.id
-      ..cashSessionId = cashMovementModel.cashSessionId
-      ..userId = cashMovementModel.userId
-      ..type = cashMovementModel.type
-      ..amount = cashMovementModel.amount
-      ..reason = cashMovementModel.reason
-      ..createdAt = cashMovementModel.createdAt;
+  static Map<String, dynamic> toMap(CashMovementModel cashMovement) {
+    return {
+      'id': cashMovement.id,
+      'cashSessionId': cashMovement.cashSessionId,
+      'userId': cashMovement.userId,
+      'type': cashMovement.type,
+      'amount': cashMovement.amount,
+      'reason': cashMovement.reason,
+      'createdAt': cashMovement.createdAt.toIso8601String(),
+    };
   }
 }

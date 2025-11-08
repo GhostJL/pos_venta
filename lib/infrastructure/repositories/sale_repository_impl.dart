@@ -1,10 +1,10 @@
 import 'package:pos_venta/domain/models/sale_model.dart';
 import 'package:pos_venta/domain/repositories/sale_repository.dart';
-import 'package:pos_venta/infrastructure/datasources/isar_sale_datasource.dart';
+import 'package:pos_venta/infrastructure/datasources/hive_sale_datasource.dart';
 import 'package:pos_venta/infrastructure/mappers/sale_mapper.dart';
 
 class SaleRepositoryImpl extends SaleRepository {
-  final IsarSaleDatasource datasource;
+  final HiveSaleDatasource datasource;
 
   SaleRepositoryImpl(this.datasource);
 

@@ -1,39 +1,41 @@
-import 'package:isar/isar.dart';
 import 'package:pos_venta/domain/datasources/cash_register_datasource.dart';
 import 'package:pos_venta/domain/entities/cash_register.dart';
 import 'package:pos_venta/domain/models/cash_register_model.dart';
-import 'package:pos_venta/infrastructure/datasources/isar_datasource.dart';
+import 'package:pos_venta/infrastructure/datasources/hive_datasource.dart';
 import 'package:pos_venta/infrastructure/mappers/cash_register_mapper.dart';
 
-class IsarCashRegisterDatasource extends CashRegisterDatasource {
-  final IsarDatasource isarDatasource;
+class HiveCashRegisterDatasource extends CashRegisterDatasource {
+  final HiveDatasource hiveDatasource;
 
-  IsarCashRegisterDatasource(this.isarDatasource);
+  HiveCashRegisterDatasource(this.hiveDatasource);
 
   @override
   Future<CashRegisterModel> createCashRegister(
       CashRegisterModel cashRegister) async {
-    final isar = await isarDatasource.db;
+    final box = await hiveDatasource.box<CashRegister>('cashRegisters');
     final cashRegisterEntity =
         CashRegisterMapper.cashRegisterModelToCashRegister(cashRegister);
 
-    await isar.writeTxn(() => isar.cashRegisters.put(cashRegisterEntity));
+    final newId = await box.add(cashRegisterEntity);
 
-    return cashRegister;
+    cashRegisterEntity.id = newId;
+    await box.put(newId, cashRegisterEntity);
+
+    return CashRegisterMapper.cashRegisterToCashRegisterModel(cashRegisterEntity);
   }
 
   @override
   Future<bool> deleteCashRegister(int cashRegisterId) async {
-    final isar = await isarDatasource.db;
-    return await isar
-        .writeTxn(() => isar.cashRegisters.delete(cashRegisterId));
+    final box = await hiveDatasource.box<CashRegister>('cashRegisters');
+    await box.delete(cashRegisterId);
+    return true;
   }
 
   @override
   Future<CashRegisterModel?> getCashRegisterById(int cashRegisterId) async {
-    final isar = await isarDatasource.db;
+    final box = await hiveDatasource.box<CashRegister>('cashRegisters');
 
-    final cashRegister = await isar.cashRegisters.get(cashRegisterId);
+    final cashRegister = box.get(cashRegisterId);
 
     if (cashRegister == null) return null;
 
@@ -42,9 +44,9 @@ class IsarCashRegisterDatasource extends CashRegisterDatasource {
 
   @override
   Future<List<CashRegisterModel>> getCashRegisters() async {
-    final isar = await isarDatasource.db;
+    final box = await hiveDatasource.box<CashRegister>('cashRegisters');
 
-    final cashRegisters = await isar.cashRegisters.where().findAll();
+    final cashRegisters = box.values.toList();
 
     return cashRegisters
         .map((cashRegister) =>
@@ -55,11 +57,11 @@ class IsarCashRegisterDatasource extends CashRegisterDatasource {
   @override
   Future<CashRegisterModel> updateCashRegister(
       CashRegisterModel cashRegister) async {
-    final isar = await isarDatasource.db;
+    final box = await hiveDatasource.box<CashRegister>('cashRegisters');
     final cashRegisterEntity =
         CashRegisterMapper.cashRegisterModelToCashRegister(cashRegister);
 
-    await isar.writeTxn(() => isar.cashRegisters.put(cashRegisterEntity));
+    await box.put(cashRegisterEntity.id, cashRegisterEntity);
 
     return cashRegister;
   }

@@ -1,9 +1,9 @@
 import 'package:pos_venta/domain/entities/cash_movement.dart';
 import 'package:pos_venta/domain/repositories/cash_movement_repository.dart';
-import 'package:pos_venta/infrastructure/datasources/isar_cash_movement_datasource.dart';
+import 'package:pos_venta/infrastructure/datasources/hive_cash_movement_datasource.dart';
 
 class CashMovementRepositoryImpl extends CashMovementRepository {
-  final IsarCashMovementDatasource datasource;
+  final HiveCashMovementDatasource datasource;
 
   CashMovementRepositoryImpl(this.datasource);
 

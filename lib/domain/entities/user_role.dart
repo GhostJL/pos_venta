@@ -1,14 +1,15 @@
-import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/role.dart';
-import 'package:pos_venta/domain/entities/user.dart';
+import 'package:hive/hive.dart';
 
 part 'user_role.g.dart';
 
-@collection
+@HiveType(typeId: 15)
 class UserRole {
-  Id? id;
+  @HiveField(0)
+  int? id;
 
-  final user = IsarLink<User>();
+  @HiveField(1)
+  late int userId;
 
-  final role = IsarLink<Role>();
+  @HiveField(2)
+  late int roleId;
 }

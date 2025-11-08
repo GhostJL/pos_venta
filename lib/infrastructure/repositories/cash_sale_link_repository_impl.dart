@@ -1,9 +1,9 @@
 import 'package:pos_venta/domain/entities/cash_sale_link.dart';
 import 'package:pos_venta/domain/repositories/cash_sale_link_repository.dart';
-import 'package:pos_venta/infrastructure/datasources/isar_cash_sale_link_datasource.dart';
+import 'package:pos_venta/infrastructure/datasources/hive_cash_sale_link_datasource.dart';
 
 class CashSaleLinkRepositoryImpl extends CashSaleLinkRepository {
-  final IsarCashSaleLinkDatasource datasource;
+  final HiveCashSaleLinkDatasource datasource;
 
   CashSaleLinkRepositoryImpl(this.datasource);
 

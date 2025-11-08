@@ -1,27 +1,33 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 
 part 'product.g.dart';
 
-@collection
+@HiveType(typeId: 8)
 class Product {
-  Id? id;
+  @HiveField(0)
+  int? id;
 
+  @HiveField(1)
   late String name;
 
-  @Index(unique: true)
+  @HiveField(2)
   String? barcode;
 
+  @HiveField(3)
   int? categoryId;
 
+  @HiveField(4)
   int? supplierId;
 
-  @Index()
+  @HiveField(5)
   bool isWeighted = false;
 
+  @HiveField(6)
   String unit = 'Unidad';
 
-  @Index()
+  @HiveField(7)
   int status = 1;
 
+  @HiveField(8)
   DateTime createdAt = DateTime.now();
 }

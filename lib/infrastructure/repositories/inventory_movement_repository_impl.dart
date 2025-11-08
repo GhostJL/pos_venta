@@ -1,9 +1,10 @@
-import 'package:pos_venta/domain/entities/inventory_movement.dart';
+import 'package:pos_venta/domain/models/inventory_movement_model.dart';
 import 'package:pos_venta/domain/repositories/inventory_movement_repository.dart';
-import 'package:pos_venta/infrastructure/datasources/isar_inventory_movement_datasource.dart';
+import 'package:pos_venta/infrastructure/datasources/hive_inventory_movement_datasource.dart';
+import 'package:pos_venta/infrastructure/mappers/inventory_movement_mapper.dart';
 
 class InventoryMovementRepositoryImpl extends InventoryMovementRepository {
-  final IsarInventoryMovementDatasource datasource;
+  final HiveInventoryMovementDatasource datasource;
 
   InventoryMovementRepositoryImpl(this.datasource);
 
@@ -13,22 +14,36 @@ class InventoryMovementRepositoryImpl extends InventoryMovementRepository {
   }
 
   @override
-  Future<List<InventoryMovement>> getAllInventoryMovements() {
-    return datasource.getAllInventoryMovements();
+  Future<List<InventoryMovementModel>> getAllInventoryMovements() async {
+    final movements = await datasource.getAllInventoryMovements();
+    return movements
+        .map((movement) =>
+            InventoryMovementMapper.inventoryMovementToInventoryMovementModel(
+                movement))
+        .toList();
   }
 
   @override
-  Future<InventoryMovement?> getInventoryMovementById(int id) {
-    return datasource.getInventoryMovementById(id);
+  Future<InventoryMovementModel?> getInventoryMovementById(int id) async {
+    final movement = await datasource.getInventoryMovementById(id);
+    if (movement == null) return null;
+    return InventoryMovementMapper.inventoryMovementToInventoryMovementModel(
+        movement);
   }
 
   @override
-  Future<void> insertInventoryMovement(InventoryMovement inventoryMovement) {
-    return datasource.insertInventoryMovement(inventoryMovement);
+  Future<void> insertInventoryMovement(InventoryMovementModel inventoryMovement) {
+    final movementEntity =
+        InventoryMovementMapper.inventoryMovementModelToInventoryMovement(
+            inventoryMovement);
+    return datasource.insertInventoryMovement(movementEntity);
   }
 
   @override
-  Future<void> updateInventoryMovement(InventoryMovement inventoryMovement) {
-    return datasource.updateInventoryMovement(inventoryMovement);
+  Future<void> updateInventoryMovement(InventoryMovementModel inventoryMovement) {
+    final movementEntity =
+        InventoryMovementMapper.inventoryMovementModelToInventoryMovement(
+            inventoryMovement);
+    return datasource.updateInventoryMovement(movementEntity);
   }
 }

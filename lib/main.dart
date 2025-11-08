@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pos_venta/config/router/app_router.dart';
 import 'package:pos_venta/config/theme/app_theme.dart';
-import 'package:pos_venta/infrastructure/datasources/isar_datasource.dart';
+import 'package:pos_venta/infrastructure/datasources/hive_datasource.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await IsarDatasource().openDB();
+  await HiveDatasource();
   runApp(const ProviderScope(child: MainApp()));
 }
 

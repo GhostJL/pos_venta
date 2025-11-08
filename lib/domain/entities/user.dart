@@ -1,21 +1,27 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 
 part 'user.g.dart';
 
-@collection
+@HiveType(typeId: 22)
 class User {
-  Id? id;
+  @HiveField(0)
+  int? id;
 
-  @Index(unique: true)
+  @HiveField(1)
   late String username;
 
+  @HiveField(2)
   late String passwordHash;
 
+  @HiveField(3)
   String? pinCode;
 
+  @HiveField(4)
   late int roleId;
 
+  @HiveField(5)
   int status = 1;
 
+  @HiveField(6)
   DateTime createdAt = DateTime.now();
 }

@@ -1,10 +1,10 @@
-import 'package:pos_venta/domain/entities/user.dart';
+import 'package:pos_venta/domain/models/user_model.dart';
 
 abstract class UserRepository {
-  Future<List<User>> getAllUsers();
-  Future<User?> getUserById(int id);
-  Future<void> insertUser(User user);
-  Future<void> updateUser(User user);
+  Future<List<UserModel>> getAllUsers();
+  Future<UserModel?> getUserById(int id);
+  Future<void> insertUser(UserModel user);
+  Future<void> updateUser(UserModel user);
   Future<void> deleteUser(int id);
-  Future<User?> signIn(String email, String password);
+  Future<UserModel?> signIn(String email, String password);
 }

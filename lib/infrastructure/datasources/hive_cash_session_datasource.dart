@@ -1,37 +1,40 @@
-import 'package:isar/isar.dart';
 import 'package:pos_venta/domain/datasources/cash_session_datasource.dart';
 import 'package:pos_venta/domain/entities/cash_session.dart';
 import 'package:pos_venta/domain/models/cash_session_model.dart';
-import 'package:pos_venta/infrastructure/datasources/isar_datasource.dart';
+import 'package:pos_venta/infrastructure/datasources/hive_datasource.dart';
 import 'package:pos_venta/infrastructure/mappers/cash_session_mapper.dart';
 
-class IsarCashSessionDatasource extends CashSessionDatasource {
-  final IsarDatasource isarDatasource;
+class HiveCashSessionDatasource extends CashSessionDatasource {
+  final HiveDatasource hiveDatasource;
 
-  IsarCashSessionDatasource(this.isarDatasource);
+  HiveCashSessionDatasource(this.hiveDatasource);
 
   @override
   Future<CashSessionModel> createCashSession(CashSessionModel cashSession) async {
-    final isar = await isarDatasource.db;
+    final box = await hiveDatasource.box<CashSession>('cashSessions');
     final cashSessionEntity =
         CashSessionMapper.cashSessionModelToCashSession(cashSession);
 
-    await isar.writeTxn(() => isar.cashSessions.put(cashSessionEntity));
+    final newId = await box.add(cashSessionEntity);
+    cashSessionEntity.id = newId;
 
-    return cashSession;
+    await box.put(newId, cashSessionEntity);
+
+    return CashSessionMapper.cashSessionToCashSessionModel(cashSessionEntity);
   }
 
   @override
   Future<bool> deleteCashSession(int cashSessionId) async {
-    final isar = await isarDatasource.db;
-    return await isar.writeTxn(() => isar.cashSessions.delete(cashSessionId));
+    final box = await hiveDatasource.box<CashSession>('cashSessions');
+    await box.delete(cashSessionId);
+    return true;
   }
 
   @override
   Future<CashSessionModel?> getCashSessionById(int cashSessionId) async {
-    final isar = await isarDatasource.db;
+    final box = await hiveDatasource.box<CashSession>('cashSessions');
 
-    final cashSession = await isar.cashSessions.get(cashSessionId);
+    final cashSession = box.get(cashSessionId);
 
     if (cashSession == null) return null;
 
@@ -40,9 +43,9 @@ class IsarCashSessionDatasource extends CashSessionDatasource {
 
   @override
   Future<List<CashSessionModel>> getCashSessions() async {
-    final isar = await isarDatasource.db;
+    final box = await hiveDatasource.box<CashSession>('cashSessions');
 
-    final cashSessions = await isar.cashSessions.where().findAll();
+    final cashSessions = box.values.toList();
 
     return cashSessions
         .map((cashSession) =>
@@ -52,11 +55,11 @@ class IsarCashSessionDatasource extends CashSessionDatasource {
 
   @override
   Future<CashSessionModel> updateCashSession(CashSessionModel cashSession) async {
-    final isar = await isarDatasource.db;
+    final box = await hiveDatasource.box<CashSession>('cashSessions');
     final cashSessionEntity =
         CashSessionMapper.cashSessionModelToCashSession(cashSession);
 
-    await isar.writeTxn(() => isar.cashSessions.put(cashSessionEntity));
+    await box.put(cashSessionEntity.id, cashSessionEntity);
 
     return cashSession;
   }

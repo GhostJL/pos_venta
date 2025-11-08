@@ -1,13 +1,15 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 
 part 'cash_register.g.dart';
 
-@collection
+@HiveType(typeId: 1)
 class CashRegister {
-  Id? id;
+  @HiveField(0)
+  int? id;
 
-  @Index(unique: true)
+  @HiveField(1)
   late String name; // Caja 1, Caja 2
 
+  @HiveField(2)
   String status = 'closed'; // open, closed
 }

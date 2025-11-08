@@ -1,20 +1,21 @@
-import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/sale.dart';
+import 'package:hive/hive.dart';
 
 part 'sale_item.g.dart';
 
-@collection
+@HiveType(typeId: 20)
 class SaleItem {
-  Id? id;
+  @HiveField(0)
+  int? id;
 
+  @HiveField(1)
   late int productId;
 
+  @HiveField(2)
   late double quantity;
 
+  @HiveField(3)
   late double price;
 
+  @HiveField(4)
   late double subtotal;
-
-  @Backlink(to: 'saleItems')
-  final sale = IsarLink<Sale>();
 }

@@ -1,15 +1,18 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 
 part 'setting.g.dart';
 
-@collection
+@HiveType(typeId: 16)
 class Setting {
-  Id? id;
+  @HiveField(0)
+  int? id;
 
-  @Index(unique: true)
+  @HiveField(1)
   late String key;
 
+  @HiveField(2)
   late String value;
 
+  @HiveField(3)
   String? description;
 }

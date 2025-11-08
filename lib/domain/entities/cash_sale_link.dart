@@ -1,12 +1,15 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 
 part 'cash_sale_link.g.dart';
 
-@collection
+@HiveType(typeId: 2)
 class CashSaleLink {
-  Id? id;
+  @HiveField(0)
+  int? id;
 
+  @HiveField(1)
   late int cashSessionId;
 
+  @HiveField(2)
   late int saleId;
 }

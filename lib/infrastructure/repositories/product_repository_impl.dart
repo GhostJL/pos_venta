@@ -1,10 +1,10 @@
 import 'package:pos_venta/domain/models/product_model.dart';
 import 'package:pos_venta/domain/repositories/product_repository.dart';
-import 'package:pos_venta/infrastructure/datasources/isar_product_datasource.dart';
+import 'package:pos_venta/infrastructure/datasources/hive_product_datasource.dart';
 import 'package:pos_venta/infrastructure/mappers/product_mapper.dart';
 
 class ProductRepositoryImpl extends ProductRepository {
-  final IsarProductDatasource datasource;
+  final HiveProductDatasource datasource;
 
   ProductRepositoryImpl(this.datasource);
 

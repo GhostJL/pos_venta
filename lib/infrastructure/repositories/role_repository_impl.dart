@@ -1,9 +1,10 @@
-import 'package:pos_venta/domain/entities/role.dart';
+import 'package:pos_venta/domain/models/role_model.dart';
 import 'package:pos_venta/domain/repositories/role_repository.dart';
-import 'package:pos_venta/infrastructure/datasources/isar_role_datasource.dart';
+import 'package:pos_venta/infrastructure/datasources/hive_role_datasource.dart';
+import 'package:pos_venta/infrastructure/mappers/role_mapper.dart';
 
 class RoleRepositoryImpl extends RoleRepository {
-  final IsarRoleDatasource datasource;
+  final HiveRoleDatasource datasource;
 
   RoleRepositoryImpl(this.datasource);
 
@@ -13,22 +14,27 @@ class RoleRepositoryImpl extends RoleRepository {
   }
 
   @override
-  Future<List<Role>> getAllRoles() {
-    return datasource.getAllRoles();
+  Future<List<RoleModel>> getAllRoles() async {
+    final roles = await datasource.getAllRoles();
+    return roles.map((role) => RoleMapper.roleToRoleModel(role)).toList();
   }
 
   @override
-  Future<Role?> getRoleById(int id) {
-    return datasource.getRoleById(id);
+  Future<RoleModel?> getRoleById(int id) async {
+    final role = await datasource.getRoleById(id);
+    if (role == null) return null;
+    return RoleMapper.roleToRoleModel(role);
   }
 
   @override
-  Future<void> insertRole(Role role) {
-    return datasource.insertRole(role);
+  Future<void> insertRole(RoleModel role) {
+    final roleEntity = RoleMapper.roleModelToRole(role);
+    return datasource.insertRole(roleEntity);
   }
 
   @override
-  Future<void> updateRole(Role role) {
-    return datasource.updateRole(role);
+  Future<void> updateRole(RoleModel role) {
+    final roleEntity = RoleMapper.roleModelToRole(role);
+    return datasource.updateRole(roleEntity);
   }
 }

@@ -1,14 +1,18 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 
 part 'supplier.g.dart';
 
-@collection
+@HiveType(typeId: 21)
 class Supplier {
-  Id? id;
+  @HiveField(0)
+  int? id;
 
+  @HiveField(1)
   late String name;
 
+  @HiveField(2)
   String? phone;
 
+  @HiveField(3)
   String? address;
 }

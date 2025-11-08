@@ -1,22 +1,27 @@
-import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/cash_session.dart';
-import 'package:pos_venta/domain/entities/sale.dart';
+import 'package:hive/hive.dart';
 
 part 'cash_transaction.g.dart';
 
-@collection
+@HiveType(typeId: 4)
 class CashTransaction {
-  Id? id;
+  @HiveField(0)
+  int? id;
 
-  final cashSession = IsarLink<CashSession>();
+  @HiveField(1)
+  late int cashSessionId;
 
-  final sale = IsarLink<Sale>();
+  @HiveField(2)
+  int? saleId;
 
+  @HiveField(3)
   late String type; // income, expense
 
+  @HiveField(4)
   late double amount;
 
+  @HiveField(5)
   String? description;
 
+  @HiveField(6)
   DateTime createdAt = DateTime.now();
 }
