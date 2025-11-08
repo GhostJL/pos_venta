@@ -1,5 +1,4 @@
 import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/product.dart';
 
 part 'inventory.g.dart';
 
@@ -7,7 +6,8 @@ part 'inventory.g.dart';
 class Inventory {
   Id? id;
 
-  final product = IsarLink<Product>();
+  @Index(unique: true)
+  late int productId;
 
   double stock = 0;
 

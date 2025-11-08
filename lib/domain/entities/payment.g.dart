@@ -41,10 +41,11 @@ const PaymentSchema = CollectionSchema(
   indexes: {},
   links: {
     r'sale': LinkSchema(
-      id: 7751925475090245138,
+      id: 2401905884081351883,
       name: r'sale',
       target: r'Sale',
       single: true,
+      linkName: r'payments',
     )
   },
   embeddedSchemas: {},

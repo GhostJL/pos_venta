@@ -22,20 +22,30 @@ const CashMovementSchema = CollectionSchema(
       name: r'amount',
       type: IsarType.double,
     ),
-    r'createdAt': PropertySchema(
+    r'cashSessionId': PropertySchema(
       id: 1,
+      name: r'cashSessionId',
+      type: IsarType.long,
+    ),
+    r'createdAt': PropertySchema(
+      id: 2,
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'description': PropertySchema(
-      id: 2,
-      name: r'description',
+    r'reason': PropertySchema(
+      id: 3,
+      name: r'reason',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'type',
       type: IsarType.string,
+    ),
+    r'userId': PropertySchema(
+      id: 5,
+      name: r'userId',
+      type: IsarType.long,
     )
   },
   estimateSize: _cashMovementEstimateSize,
@@ -44,20 +54,7 @@ const CashMovementSchema = CollectionSchema(
   deserializeProp: _cashMovementDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {
-    r'session': LinkSchema(
-      id: -8788722521937685811,
-      name: r'session',
-      target: r'CashSession',
-      single: true,
-    ),
-    r'user': LinkSchema(
-      id: -1355108704045448712,
-      name: r'user',
-      target: r'User',
-      single: true,
-    )
-  },
+  links: {},
   embeddedSchemas: {},
   getId: _cashMovementGetId,
   getLinks: _cashMovementGetLinks,
@@ -72,7 +69,7 @@ int _cashMovementEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
-    final value = object.description;
+    final value = object.reason;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -88,9 +85,11 @@ void _cashMovementSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDouble(offsets[0], object.amount);
-  writer.writeDateTime(offsets[1], object.createdAt);
-  writer.writeString(offsets[2], object.description);
-  writer.writeString(offsets[3], object.type);
+  writer.writeLong(offsets[1], object.cashSessionId);
+  writer.writeDateTime(offsets[2], object.createdAt);
+  writer.writeString(offsets[3], object.reason);
+  writer.writeString(offsets[4], object.type);
+  writer.writeLong(offsets[5], object.userId);
 }
 
 CashMovement _cashMovementDeserialize(
@@ -101,10 +100,12 @@ CashMovement _cashMovementDeserialize(
 ) {
   final object = CashMovement();
   object.amount = reader.readDouble(offsets[0]);
-  object.createdAt = reader.readDateTime(offsets[1]);
-  object.description = reader.readStringOrNull(offsets[2]);
+  object.cashSessionId = reader.readLong(offsets[1]);
+  object.createdAt = reader.readDateTime(offsets[2]);
   object.id = id;
-  object.type = reader.readString(offsets[3]);
+  object.reason = reader.readStringOrNull(offsets[3]);
+  object.type = reader.readString(offsets[4]);
+  object.userId = reader.readLong(offsets[5]);
   return object;
 }
 
@@ -118,11 +119,15 @@ P _cashMovementDeserializeProp<P>(
     case 0:
       return (reader.readDouble(offset)) as P;
     case 1:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
       return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -133,15 +138,12 @@ Id _cashMovementGetId(CashMovement object) {
 }
 
 List<IsarLinkBase<dynamic>> _cashMovementGetLinks(CashMovement object) {
-  return [object.session, object.user];
+  return [];
 }
 
 void _cashMovementAttach(
     IsarCollection<dynamic> col, Id id, CashMovement object) {
   object.id = id;
-  object.session
-      .attach(col, col.isar.collection<CashSession>(), r'session', id);
-  object.user.attach(col, col.isar.collection<User>(), r'user', id);
 }
 
 extension CashMovementQueryWhereSort
@@ -290,6 +292,62 @@ extension CashMovementQueryFilter
   }
 
   QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      cashSessionIdEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'cashSessionId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      cashSessionIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'cashSessionId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      cashSessionIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'cashSessionId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      cashSessionIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'cashSessionId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
       createdAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -341,160 +399,6 @@ extension CashMovementQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      descriptionIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'description',
-      ));
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      descriptionIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'description',
-      ));
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      descriptionEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'description',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      descriptionGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'description',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      descriptionLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'description',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      descriptionBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'description',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      descriptionStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'description',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      descriptionEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'description',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      descriptionContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'description',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      descriptionMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'description',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      descriptionIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'description',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      descriptionIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'description',
-        value: '',
       ));
     });
   }
@@ -565,6 +469,159 @@ extension CashMovementQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      reasonIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'reason',
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      reasonIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'reason',
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition> reasonEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'reason',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      reasonGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'reason',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      reasonLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'reason',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition> reasonBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'reason',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      reasonStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'reason',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      reasonEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'reason',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      reasonContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'reason',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition> reasonMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'reason',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      reasonIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'reason',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      reasonIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'reason',
+        value: '',
       ));
     });
   }
@@ -702,40 +759,68 @@ extension CashMovementQueryFilter
       ));
     });
   }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition> userIdEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      userIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'userId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
+      userIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'userId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition> userIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'userId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension CashMovementQueryObject
     on QueryBuilder<CashMovement, CashMovement, QFilterCondition> {}
 
 extension CashMovementQueryLinks
-    on QueryBuilder<CashMovement, CashMovement, QFilterCondition> {
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition> session(
-      FilterQuery<CashSession> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'session');
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition>
-      sessionIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'session', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition> user(
-      FilterQuery<User> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'user');
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterFilterCondition> userIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'user', 0, true, 0, true);
-    });
-  }
-}
+    on QueryBuilder<CashMovement, CashMovement, QFilterCondition> {}
 
 extension CashMovementQuerySortBy
     on QueryBuilder<CashMovement, CashMovement, QSortBy> {
@@ -751,6 +836,19 @@ extension CashMovementQuerySortBy
     });
   }
 
+  QueryBuilder<CashMovement, CashMovement, QAfterSortBy> sortByCashSessionId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cashSessionId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterSortBy>
+      sortByCashSessionIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cashSessionId', Sort.desc);
+    });
+  }
+
   QueryBuilder<CashMovement, CashMovement, QAfterSortBy> sortByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
@@ -763,16 +861,15 @@ extension CashMovementQuerySortBy
     });
   }
 
-  QueryBuilder<CashMovement, CashMovement, QAfterSortBy> sortByDescription() {
+  QueryBuilder<CashMovement, CashMovement, QAfterSortBy> sortByReason() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'description', Sort.asc);
+      return query.addSortBy(r'reason', Sort.asc);
     });
   }
 
-  QueryBuilder<CashMovement, CashMovement, QAfterSortBy>
-      sortByDescriptionDesc() {
+  QueryBuilder<CashMovement, CashMovement, QAfterSortBy> sortByReasonDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'description', Sort.desc);
+      return query.addSortBy(r'reason', Sort.desc);
     });
   }
 
@@ -785,6 +882,18 @@ extension CashMovementQuerySortBy
   QueryBuilder<CashMovement, CashMovement, QAfterSortBy> sortByTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.desc);
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterSortBy> sortByUserId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterSortBy> sortByUserIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.desc);
     });
   }
 }
@@ -803,6 +912,19 @@ extension CashMovementQuerySortThenBy
     });
   }
 
+  QueryBuilder<CashMovement, CashMovement, QAfterSortBy> thenByCashSessionId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cashSessionId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterSortBy>
+      thenByCashSessionIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cashSessionId', Sort.desc);
+    });
+  }
+
   QueryBuilder<CashMovement, CashMovement, QAfterSortBy> thenByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
@@ -812,19 +934,6 @@ extension CashMovementQuerySortThenBy
   QueryBuilder<CashMovement, CashMovement, QAfterSortBy> thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterSortBy> thenByDescription() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'description', Sort.asc);
-    });
-  }
-
-  QueryBuilder<CashMovement, CashMovement, QAfterSortBy>
-      thenByDescriptionDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'description', Sort.desc);
     });
   }
 
@@ -840,6 +949,18 @@ extension CashMovementQuerySortThenBy
     });
   }
 
+  QueryBuilder<CashMovement, CashMovement, QAfterSortBy> thenByReason() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'reason', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterSortBy> thenByReasonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'reason', Sort.desc);
+    });
+  }
+
   QueryBuilder<CashMovement, CashMovement, QAfterSortBy> thenByType() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.asc);
@@ -849,6 +970,18 @@ extension CashMovementQuerySortThenBy
   QueryBuilder<CashMovement, CashMovement, QAfterSortBy> thenByTypeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'type', Sort.desc);
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterSortBy> thenByUserId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QAfterSortBy> thenByUserIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.desc);
     });
   }
 }
@@ -861,16 +994,23 @@ extension CashMovementQueryWhereDistinct
     });
   }
 
+  QueryBuilder<CashMovement, CashMovement, QDistinct>
+      distinctByCashSessionId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'cashSessionId');
+    });
+  }
+
   QueryBuilder<CashMovement, CashMovement, QDistinct> distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdAt');
     });
   }
 
-  QueryBuilder<CashMovement, CashMovement, QDistinct> distinctByDescription(
+  QueryBuilder<CashMovement, CashMovement, QDistinct> distinctByReason(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'description', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'reason', caseSensitive: caseSensitive);
     });
   }
 
@@ -878,6 +1018,12 @@ extension CashMovementQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'type', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<CashMovement, CashMovement, QDistinct> distinctByUserId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'userId');
     });
   }
 }
@@ -896,21 +1042,33 @@ extension CashMovementQueryProperty
     });
   }
 
+  QueryBuilder<CashMovement, int, QQueryOperations> cashSessionIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cashSessionId');
+    });
+  }
+
   QueryBuilder<CashMovement, DateTime, QQueryOperations> createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
     });
   }
 
-  QueryBuilder<CashMovement, String?, QQueryOperations> descriptionProperty() {
+  QueryBuilder<CashMovement, String?, QQueryOperations> reasonProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'description');
+      return query.addPropertyName(r'reason');
     });
   }
 
   QueryBuilder<CashMovement, String, QQueryOperations> typeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'type');
+    });
+  }
+
+  QueryBuilder<CashMovement, int, QQueryOperations> userIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'userId');
     });
   }
 }

@@ -9,5 +9,7 @@ class Setting {
   @Index(unique: true)
   late String key;
 
-  String? value;
+  late String value;
+
+  String? description;
 }

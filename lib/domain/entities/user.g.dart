@@ -32,13 +32,18 @@ const UserSchema = CollectionSchema(
       name: r'pinCode',
       type: IsarType.string,
     ),
-    r'status': PropertySchema(
+    r'roleId': PropertySchema(
       id: 3,
+      name: r'roleId',
+      type: IsarType.long,
+    ),
+    r'status': PropertySchema(
+      id: 4,
       name: r'status',
       type: IsarType.long,
     ),
     r'username': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'username',
       type: IsarType.string,
     )
@@ -63,14 +68,7 @@ const UserSchema = CollectionSchema(
       ],
     )
   },
-  links: {
-    r'role': LinkSchema(
-      id: -8982828621828586302,
-      name: r'role',
-      target: r'Role',
-      single: true,
-    )
-  },
+  links: {},
   embeddedSchemas: {},
   getId: _userGetId,
   getLinks: _userGetLinks,
@@ -104,8 +102,9 @@ void _userSerialize(
   writer.writeDateTime(offsets[0], object.createdAt);
   writer.writeString(offsets[1], object.passwordHash);
   writer.writeString(offsets[2], object.pinCode);
-  writer.writeLong(offsets[3], object.status);
-  writer.writeString(offsets[4], object.username);
+  writer.writeLong(offsets[3], object.roleId);
+  writer.writeLong(offsets[4], object.status);
+  writer.writeString(offsets[5], object.username);
 }
 
 User _userDeserialize(
@@ -119,8 +118,9 @@ User _userDeserialize(
   object.id = id;
   object.passwordHash = reader.readString(offsets[1]);
   object.pinCode = reader.readStringOrNull(offsets[2]);
-  object.status = reader.readLong(offsets[3]);
-  object.username = reader.readString(offsets[4]);
+  object.roleId = reader.readLong(offsets[3]);
+  object.status = reader.readLong(offsets[4]);
+  object.username = reader.readString(offsets[5]);
   return object;
 }
 
@@ -140,6 +140,8 @@ P _userDeserializeProp<P>(
     case 3:
       return (reader.readLong(offset)) as P;
     case 4:
+      return (reader.readLong(offset)) as P;
+    case 5:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -151,12 +153,11 @@ Id _userGetId(User object) {
 }
 
 List<IsarLinkBase<dynamic>> _userGetLinks(User object) {
-  return [object.role];
+  return [];
 }
 
 void _userAttach(IsarCollection<dynamic> col, Id id, User object) {
   object.id = id;
-  object.role.attach(col, col.isar.collection<Role>(), r'role', id);
 }
 
 extension UserByIndex on IsarCollection<User> {
@@ -728,6 +729,58 @@ extension UserQueryFilter on QueryBuilder<User, User, QFilterCondition> {
     });
   }
 
+  QueryBuilder<User, User, QAfterFilterCondition> roleIdEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'roleId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> roleIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'roleId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> roleIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'roleId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<User, User, QAfterFilterCondition> roleIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'roleId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<User, User, QAfterFilterCondition> statusEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -912,19 +965,7 @@ extension UserQueryFilter on QueryBuilder<User, User, QFilterCondition> {
 
 extension UserQueryObject on QueryBuilder<User, User, QFilterCondition> {}
 
-extension UserQueryLinks on QueryBuilder<User, User, QFilterCondition> {
-  QueryBuilder<User, User, QAfterFilterCondition> role(FilterQuery<Role> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'role');
-    });
-  }
-
-  QueryBuilder<User, User, QAfterFilterCondition> roleIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'role', 0, true, 0, true);
-    });
-  }
-}
+extension UserQueryLinks on QueryBuilder<User, User, QFilterCondition> {}
 
 extension UserQuerySortBy on QueryBuilder<User, User, QSortBy> {
   QueryBuilder<User, User, QAfterSortBy> sortByCreatedAt() {
@@ -960,6 +1001,18 @@ extension UserQuerySortBy on QueryBuilder<User, User, QSortBy> {
   QueryBuilder<User, User, QAfterSortBy> sortByPinCodeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'pinCode', Sort.desc);
+    });
+  }
+
+  QueryBuilder<User, User, QAfterSortBy> sortByRoleId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'roleId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<User, User, QAfterSortBy> sortByRoleIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'roleId', Sort.desc);
     });
   }
 
@@ -1037,6 +1090,18 @@ extension UserQuerySortThenBy on QueryBuilder<User, User, QSortThenBy> {
     });
   }
 
+  QueryBuilder<User, User, QAfterSortBy> thenByRoleId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'roleId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<User, User, QAfterSortBy> thenByRoleIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'roleId', Sort.desc);
+    });
+  }
+
   QueryBuilder<User, User, QAfterSortBy> thenByStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'status', Sort.asc);
@@ -1083,6 +1148,12 @@ extension UserQueryWhereDistinct on QueryBuilder<User, User, QDistinct> {
     });
   }
 
+  QueryBuilder<User, User, QDistinct> distinctByRoleId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'roleId');
+    });
+  }
+
   QueryBuilder<User, User, QDistinct> distinctByStatus() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'status');
@@ -1119,6 +1190,12 @@ extension UserQueryProperty on QueryBuilder<User, User, QQueryProperty> {
   QueryBuilder<User, String?, QQueryOperations> pinCodeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'pinCode');
+    });
+  }
+
+  QueryBuilder<User, int, QQueryOperations> roleIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'roleId');
     });
   }
 

@@ -1,6 +1,4 @@
 import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/cash_session.dart';
-import 'package:pos_venta/domain/entities/sale.dart';
 
 part 'cash_sale_link.g.dart';
 
@@ -8,7 +6,7 @@ part 'cash_sale_link.g.dart';
 class CashSaleLink {
   Id? id;
 
-  final sale = IsarLink<Sale>();
+  late int cashSessionId;
 
-  final session = IsarLink<CashSession>();
+  late int saleId;
 }

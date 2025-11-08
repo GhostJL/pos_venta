@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/user.dart';
+import 'package:pos_venta/domain/entities/sale_item.dart';
+import 'package:pos_venta/domain/entities/payment.dart';
 
 part 'sale.g.dart';
 
@@ -8,21 +9,24 @@ class Sale {
   Id? id;
 
   @Index(unique: true)
-  int? ticketNumber;
+  late String ticketNumber;
 
-  final user = IsarLink<User>();
+  late int userId;
 
-  // final customer = IsarLink<Customer>(); // Customer entity not defined yet
+  int? customerId; // Opcional, para clientes registrados
 
   late double total;
-
   late double paid;
-
   late double change;
 
   late String paymentMethod; // efectivo, tarjeta, mixto
 
+  @Index()
   String status = 'completed'; // completed, cancelled, refunded
 
   DateTime createdAt = DateTime.now();
+
+  final saleItems = IsarLinks<SaleItem>();
+
+  final payments = IsarLinks<Payment>();
 }

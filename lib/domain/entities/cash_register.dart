@@ -6,7 +6,8 @@ part 'cash_register.g.dart';
 class CashRegister {
   Id? id;
 
-  late String name; // Caja 1, Caja 2, etc.
+  @Index(unique: true)
+  late String name; // Caja 1, Caja 2
 
-  String status = 'closed';
+  String status = 'closed'; // open, closed
 }

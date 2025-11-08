@@ -1,6 +1,4 @@
 import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/cash_session.dart';
-import 'package:pos_venta/domain/entities/user.dart';
 
 part 'cash_movement.g.dart';
 
@@ -8,15 +6,15 @@ part 'cash_movement.g.dart';
 class CashMovement {
   Id? id;
 
-  final session = IsarLink<CashSession>();
+  late int cashSessionId;
 
-  late String type; // ingreso, retiro
+  late int userId;
+
+  late String type; // entrada, salida
 
   late double amount;
 
-  String? description;
-
-  final user = IsarLink<User>();
+  String? reason;
 
   DateTime createdAt = DateTime.now();
 }

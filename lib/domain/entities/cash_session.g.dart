@@ -17,30 +17,40 @@ const CashSessionSchema = CollectionSchema(
   name: r'CashSession',
   id: -828438757725199893,
   properties: {
-    r'closedAt': PropertySchema(
+    r'cashRegisterId': PropertySchema(
       id: 0,
+      name: r'cashRegisterId',
+      type: IsarType.long,
+    ),
+    r'closedAt': PropertySchema(
+      id: 1,
       name: r'closedAt',
       type: IsarType.dateTime,
     ),
     r'closingAmount': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'closingAmount',
       type: IsarType.double,
     ),
     r'openedAt': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'openedAt',
       type: IsarType.dateTime,
     ),
     r'openingAmount': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'openingAmount',
       type: IsarType.double,
     ),
     r'status': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'status',
       type: IsarType.string,
+    ),
+    r'userOpenedId': PropertySchema(
+      id: 6,
+      name: r'userOpenedId',
+      type: IsarType.long,
     )
   },
   estimateSize: _cashSessionEstimateSize,
@@ -49,20 +59,7 @@ const CashSessionSchema = CollectionSchema(
   deserializeProp: _cashSessionDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {
-    r'cashRegister': LinkSchema(
-      id: 3278045918635040047,
-      name: r'cashRegister',
-      target: r'CashRegister',
-      single: true,
-    ),
-    r'userOpened': LinkSchema(
-      id: -5581226948354351507,
-      name: r'userOpened',
-      target: r'User',
-      single: true,
-    )
-  },
+  links: {},
   embeddedSchemas: {},
   getId: _cashSessionGetId,
   getLinks: _cashSessionGetLinks,
@@ -86,11 +83,13 @@ void _cashSessionSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.closedAt);
-  writer.writeDouble(offsets[1], object.closingAmount);
-  writer.writeDateTime(offsets[2], object.openedAt);
-  writer.writeDouble(offsets[3], object.openingAmount);
-  writer.writeString(offsets[4], object.status);
+  writer.writeLong(offsets[0], object.cashRegisterId);
+  writer.writeDateTime(offsets[1], object.closedAt);
+  writer.writeDouble(offsets[2], object.closingAmount);
+  writer.writeDateTime(offsets[3], object.openedAt);
+  writer.writeDouble(offsets[4], object.openingAmount);
+  writer.writeString(offsets[5], object.status);
+  writer.writeLong(offsets[6], object.userOpenedId);
 }
 
 CashSession _cashSessionDeserialize(
@@ -100,12 +99,14 @@ CashSession _cashSessionDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = CashSession();
-  object.closedAt = reader.readDateTimeOrNull(offsets[0]);
-  object.closingAmount = reader.readDoubleOrNull(offsets[1]);
+  object.cashRegisterId = reader.readLong(offsets[0]);
+  object.closedAt = reader.readDateTimeOrNull(offsets[1]);
+  object.closingAmount = reader.readDoubleOrNull(offsets[2]);
   object.id = id;
-  object.openedAt = reader.readDateTime(offsets[2]);
-  object.openingAmount = reader.readDouble(offsets[3]);
-  object.status = reader.readString(offsets[4]);
+  object.openedAt = reader.readDateTime(offsets[3]);
+  object.openingAmount = reader.readDouble(offsets[4]);
+  object.status = reader.readString(offsets[5]);
+  object.userOpenedId = reader.readLong(offsets[6]);
   return object;
 }
 
@@ -117,15 +118,19 @@ P _cashSessionDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 1:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 2:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDoubleOrNull(offset)) as P;
     case 3:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 4:
+      return (reader.readDouble(offset)) as P;
+    case 5:
       return (reader.readString(offset)) as P;
+    case 6:
+      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -136,15 +141,12 @@ Id _cashSessionGetId(CashSession object) {
 }
 
 List<IsarLinkBase<dynamic>> _cashSessionGetLinks(CashSession object) {
-  return [object.cashRegister, object.userOpened];
+  return [];
 }
 
 void _cashSessionAttach(
     IsarCollection<dynamic> col, Id id, CashSession object) {
   object.id = id;
-  object.cashRegister
-      .attach(col, col.isar.collection<CashRegister>(), r'cashRegister', id);
-  object.userOpened.attach(col, col.isar.collection<User>(), r'userOpened', id);
 }
 
 extension CashSessionQueryWhereSort
@@ -227,6 +229,62 @@ extension CashSessionQueryWhere
 
 extension CashSessionQueryFilter
     on QueryBuilder<CashSession, CashSession, QFilterCondition> {
+  QueryBuilder<CashSession, CashSession, QAfterFilterCondition>
+      cashRegisterIdEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'cashRegisterId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashSession, CashSession, QAfterFilterCondition>
+      cashRegisterIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'cashRegisterId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashSession, CashSession, QAfterFilterCondition>
+      cashRegisterIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'cashRegisterId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashSession, CashSession, QAfterFilterCondition>
+      cashRegisterIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'cashRegisterId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<CashSession, CashSession, QAfterFilterCondition>
       closedAtIsNull() {
     return QueryBuilder.apply(this, (query) {
@@ -707,44 +765,85 @@ extension CashSessionQueryFilter
       ));
     });
   }
+
+  QueryBuilder<CashSession, CashSession, QAfterFilterCondition>
+      userOpenedIdEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userOpenedId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashSession, CashSession, QAfterFilterCondition>
+      userOpenedIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'userOpenedId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashSession, CashSession, QAfterFilterCondition>
+      userOpenedIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'userOpenedId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashSession, CashSession, QAfterFilterCondition>
+      userOpenedIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'userOpenedId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension CashSessionQueryObject
     on QueryBuilder<CashSession, CashSession, QFilterCondition> {}
 
 extension CashSessionQueryLinks
-    on QueryBuilder<CashSession, CashSession, QFilterCondition> {
-  QueryBuilder<CashSession, CashSession, QAfterFilterCondition> cashRegister(
-      FilterQuery<CashRegister> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'cashRegister');
-    });
-  }
-
-  QueryBuilder<CashSession, CashSession, QAfterFilterCondition>
-      cashRegisterIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'cashRegister', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<CashSession, CashSession, QAfterFilterCondition> userOpened(
-      FilterQuery<User> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'userOpened');
-    });
-  }
-
-  QueryBuilder<CashSession, CashSession, QAfterFilterCondition>
-      userOpenedIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'userOpened', 0, true, 0, true);
-    });
-  }
-}
+    on QueryBuilder<CashSession, CashSession, QFilterCondition> {}
 
 extension CashSessionQuerySortBy
     on QueryBuilder<CashSession, CashSession, QSortBy> {
+  QueryBuilder<CashSession, CashSession, QAfterSortBy> sortByCashRegisterId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cashRegisterId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CashSession, CashSession, QAfterSortBy>
+      sortByCashRegisterIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cashRegisterId', Sort.desc);
+    });
+  }
+
   QueryBuilder<CashSession, CashSession, QAfterSortBy> sortByClosedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'closedAt', Sort.asc);
@@ -806,10 +905,36 @@ extension CashSessionQuerySortBy
       return query.addSortBy(r'status', Sort.desc);
     });
   }
+
+  QueryBuilder<CashSession, CashSession, QAfterSortBy> sortByUserOpenedId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userOpenedId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CashSession, CashSession, QAfterSortBy>
+      sortByUserOpenedIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userOpenedId', Sort.desc);
+    });
+  }
 }
 
 extension CashSessionQuerySortThenBy
     on QueryBuilder<CashSession, CashSession, QSortThenBy> {
+  QueryBuilder<CashSession, CashSession, QAfterSortBy> thenByCashRegisterId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cashRegisterId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CashSession, CashSession, QAfterSortBy>
+      thenByCashRegisterIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cashRegisterId', Sort.desc);
+    });
+  }
+
   QueryBuilder<CashSession, CashSession, QAfterSortBy> thenByClosedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'closedAt', Sort.asc);
@@ -883,10 +1008,29 @@ extension CashSessionQuerySortThenBy
       return query.addSortBy(r'status', Sort.desc);
     });
   }
+
+  QueryBuilder<CashSession, CashSession, QAfterSortBy> thenByUserOpenedId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userOpenedId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CashSession, CashSession, QAfterSortBy>
+      thenByUserOpenedIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userOpenedId', Sort.desc);
+    });
+  }
 }
 
 extension CashSessionQueryWhereDistinct
     on QueryBuilder<CashSession, CashSession, QDistinct> {
+  QueryBuilder<CashSession, CashSession, QDistinct> distinctByCashRegisterId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'cashRegisterId');
+    });
+  }
+
   QueryBuilder<CashSession, CashSession, QDistinct> distinctByClosedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'closedAt');
@@ -917,6 +1061,12 @@ extension CashSessionQueryWhereDistinct
       return query.addDistinctBy(r'status', caseSensitive: caseSensitive);
     });
   }
+
+  QueryBuilder<CashSession, CashSession, QDistinct> distinctByUserOpenedId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'userOpenedId');
+    });
+  }
 }
 
 extension CashSessionQueryProperty
@@ -924,6 +1074,12 @@ extension CashSessionQueryProperty
   QueryBuilder<CashSession, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<CashSession, int, QQueryOperations> cashRegisterIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cashRegisterId');
     });
   }
 
@@ -954,6 +1110,12 @@ extension CashSessionQueryProperty
   QueryBuilder<CashSession, String, QQueryOperations> statusProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'status');
+    });
+  }
+
+  QueryBuilder<CashSession, int, QQueryOperations> userOpenedIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'userOpenedId');
     });
   }
 }

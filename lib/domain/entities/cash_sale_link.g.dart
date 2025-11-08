@@ -16,27 +16,25 @@ extension GetCashSaleLinkCollection on Isar {
 const CashSaleLinkSchema = CollectionSchema(
   name: r'CashSaleLink',
   id: 4754780969988967773,
-  properties: {},
+  properties: {
+    r'cashSessionId': PropertySchema(
+      id: 0,
+      name: r'cashSessionId',
+      type: IsarType.long,
+    ),
+    r'saleId': PropertySchema(
+      id: 1,
+      name: r'saleId',
+      type: IsarType.long,
+    )
+  },
   estimateSize: _cashSaleLinkEstimateSize,
   serialize: _cashSaleLinkSerialize,
   deserialize: _cashSaleLinkDeserialize,
   deserializeProp: _cashSaleLinkDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {
-    r'sale': LinkSchema(
-      id: 6071546092072827494,
-      name: r'sale',
-      target: r'Sale',
-      single: true,
-    ),
-    r'session': LinkSchema(
-      id: -8369591090308055544,
-      name: r'session',
-      target: r'CashSession',
-      single: true,
-    )
-  },
+  links: {},
   embeddedSchemas: {},
   getId: _cashSaleLinkGetId,
   getLinks: _cashSaleLinkGetLinks,
@@ -58,7 +56,11 @@ void _cashSaleLinkSerialize(
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
-) {}
+) {
+  writer.writeLong(offsets[0], object.cashSessionId);
+  writer.writeLong(offsets[1], object.saleId);
+}
+
 CashSaleLink _cashSaleLinkDeserialize(
   Id id,
   IsarReader reader,
@@ -66,7 +68,9 @@ CashSaleLink _cashSaleLinkDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = CashSaleLink();
+  object.cashSessionId = reader.readLong(offsets[0]);
   object.id = id;
+  object.saleId = reader.readLong(offsets[1]);
   return object;
 }
 
@@ -77,6 +81,10 @@ P _cashSaleLinkDeserializeProp<P>(
   Map<Type, List<int>> allOffsets,
 ) {
   switch (propertyId) {
+    case 0:
+      return (reader.readLong(offset)) as P;
+    case 1:
+      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -87,15 +95,12 @@ Id _cashSaleLinkGetId(CashSaleLink object) {
 }
 
 List<IsarLinkBase<dynamic>> _cashSaleLinkGetLinks(CashSaleLink object) {
-  return [object.sale, object.session];
+  return [];
 }
 
 void _cashSaleLinkAttach(
     IsarCollection<dynamic> col, Id id, CashSaleLink object) {
   object.id = id;
-  object.sale.attach(col, col.isar.collection<Sale>(), r'sale', id);
-  object.session
-      .attach(col, col.isar.collection<CashSession>(), r'session', id);
 }
 
 extension CashSaleLinkQueryWhereSort
@@ -179,6 +184,62 @@ extension CashSaleLinkQueryWhere
 
 extension CashSaleLinkQueryFilter
     on QueryBuilder<CashSaleLink, CashSaleLink, QFilterCondition> {
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition>
+      cashSessionIdEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'cashSessionId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition>
+      cashSessionIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'cashSessionId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition>
+      cashSessionIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'cashSessionId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition>
+      cashSessionIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'cashSessionId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition> idIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -248,46 +309,112 @@ extension CashSaleLinkQueryFilter
       ));
     });
   }
+
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition> saleIdEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'saleId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition>
+      saleIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'saleId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition>
+      saleIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'saleId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition> saleIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'saleId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension CashSaleLinkQueryObject
     on QueryBuilder<CashSaleLink, CashSaleLink, QFilterCondition> {}
 
 extension CashSaleLinkQueryLinks
-    on QueryBuilder<CashSaleLink, CashSaleLink, QFilterCondition> {
-  QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition> sale(
-      FilterQuery<Sale> q) {
+    on QueryBuilder<CashSaleLink, CashSaleLink, QFilterCondition> {}
+
+extension CashSaleLinkQuerySortBy
+    on QueryBuilder<CashSaleLink, CashSaleLink, QSortBy> {
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterSortBy> sortByCashSessionId() {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'sale');
+      return query.addSortBy(r'cashSessionId', Sort.asc);
     });
   }
 
-  QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition> saleIsNull() {
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterSortBy>
+      sortByCashSessionIdDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'sale', 0, true, 0, true);
+      return query.addSortBy(r'cashSessionId', Sort.desc);
     });
   }
 
-  QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition> session(
-      FilterQuery<CashSession> q) {
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterSortBy> sortBySaleId() {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'session');
+      return query.addSortBy(r'saleId', Sort.asc);
     });
   }
 
-  QueryBuilder<CashSaleLink, CashSaleLink, QAfterFilterCondition>
-      sessionIsNull() {
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterSortBy> sortBySaleIdDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'session', 0, true, 0, true);
+      return query.addSortBy(r'saleId', Sort.desc);
     });
   }
 }
 
-extension CashSaleLinkQuerySortBy
-    on QueryBuilder<CashSaleLink, CashSaleLink, QSortBy> {}
-
 extension CashSaleLinkQuerySortThenBy
     on QueryBuilder<CashSaleLink, CashSaleLink, QSortThenBy> {
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterSortBy> thenByCashSessionId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cashSessionId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterSortBy>
+      thenByCashSessionIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cashSessionId', Sort.desc);
+    });
+  }
+
   QueryBuilder<CashSaleLink, CashSaleLink, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -299,16 +426,53 @@ extension CashSaleLinkQuerySortThenBy
       return query.addSortBy(r'id', Sort.desc);
     });
   }
+
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterSortBy> thenBySaleId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'saleId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<CashSaleLink, CashSaleLink, QAfterSortBy> thenBySaleIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'saleId', Sort.desc);
+    });
+  }
 }
 
 extension CashSaleLinkQueryWhereDistinct
-    on QueryBuilder<CashSaleLink, CashSaleLink, QDistinct> {}
+    on QueryBuilder<CashSaleLink, CashSaleLink, QDistinct> {
+  QueryBuilder<CashSaleLink, CashSaleLink, QDistinct>
+      distinctByCashSessionId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'cashSessionId');
+    });
+  }
+
+  QueryBuilder<CashSaleLink, CashSaleLink, QDistinct> distinctBySaleId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'saleId');
+    });
+  }
+}
 
 extension CashSaleLinkQueryProperty
     on QueryBuilder<CashSaleLink, CashSaleLink, QQueryProperty> {
   QueryBuilder<CashSaleLink, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<CashSaleLink, int, QQueryOperations> cashSessionIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cashSessionId');
+    });
+  }
+
+  QueryBuilder<CashSaleLink, int, QQueryOperations> saleIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'saleId');
     });
   }
 }

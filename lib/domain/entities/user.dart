@@ -1,5 +1,4 @@
 import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/role.dart';
 
 part 'user.g.dart';
 
@@ -14,9 +13,9 @@ class User {
 
   String? pinCode;
 
-  final role = IsarLink<Role>();
+  late int roleId;
 
-  int status = 1; // 1 = activo, 0 = desactivado
+  int status = 1;
 
   DateTime createdAt = DateTime.now();
 }

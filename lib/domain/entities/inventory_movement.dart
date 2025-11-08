@@ -1,6 +1,4 @@
 import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/product.dart';
-import 'package:pos_venta/domain/entities/user.dart';
 
 part 'inventory_movement.g.dart';
 
@@ -8,7 +6,7 @@ part 'inventory_movement.g.dart';
 class InventoryMovement {
   Id? id;
 
-  final product = IsarLink<Product>();
+  late int productId;
 
   late String type; // entrada, salida, ajuste
 
@@ -16,7 +14,7 @@ class InventoryMovement {
 
   String? reason;
 
-  final user = IsarLink<User>();
+  late int userId;
 
   DateTime createdAt = DateTime.now();
 }

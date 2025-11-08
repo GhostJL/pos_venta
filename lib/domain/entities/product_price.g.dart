@@ -37,8 +37,13 @@ const ProductPriceSchema = CollectionSchema(
       name: r'price',
       type: IsarType.double,
     ),
-    r'updatedAt': PropertySchema(
+    r'productId': PropertySchema(
       id: 4,
+      name: r'productId',
+      type: IsarType.long,
+    ),
+    r'updatedAt': PropertySchema(
+      id: 5,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -48,29 +53,8 @@ const ProductPriceSchema = CollectionSchema(
   deserialize: _productPriceDeserialize,
   deserializeProp: _productPriceDeserializeProp,
   idName: r'id',
-  indexes: {
-    r'isActive': IndexSchema(
-      id: 8092228061260947457,
-      name: r'isActive',
-      unique: false,
-      replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'isActive',
-          type: IndexType.value,
-          caseSensitive: false,
-        )
-      ],
-    )
-  },
-  links: {
-    r'product': LinkSchema(
-      id: 2652650257301068555,
-      name: r'product',
-      target: r'Product',
-      single: true,
-    )
-  },
+  indexes: {},
+  links: {},
   embeddedSchemas: {},
   getId: _productPriceGetId,
   getLinks: _productPriceGetLinks,
@@ -97,7 +81,8 @@ void _productPriceSerialize(
   writer.writeBool(offsets[1], object.isActive);
   writer.writeLong(offsets[2], object.minQty);
   writer.writeDouble(offsets[3], object.price);
-  writer.writeDateTime(offsets[4], object.updatedAt);
+  writer.writeLong(offsets[4], object.productId);
+  writer.writeDateTime(offsets[5], object.updatedAt);
 }
 
 ProductPrice _productPriceDeserialize(
@@ -112,7 +97,8 @@ ProductPrice _productPriceDeserialize(
   object.isActive = reader.readBool(offsets[1]);
   object.minQty = reader.readLong(offsets[2]);
   object.price = reader.readDouble(offsets[3]);
-  object.updatedAt = reader.readDateTime(offsets[4]);
+  object.productId = reader.readLong(offsets[4]);
+  object.updatedAt = reader.readDateTime(offsets[5]);
   return object;
 }
 
@@ -132,6 +118,8 @@ P _productPriceDeserializeProp<P>(
     case 3:
       return (reader.readDouble(offset)) as P;
     case 4:
+      return (reader.readLong(offset)) as P;
+    case 5:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -143,13 +131,12 @@ Id _productPriceGetId(ProductPrice object) {
 }
 
 List<IsarLinkBase<dynamic>> _productPriceGetLinks(ProductPrice object) {
-  return [object.product];
+  return [];
 }
 
 void _productPriceAttach(
     IsarCollection<dynamic> col, Id id, ProductPrice object) {
   object.id = id;
-  object.product.attach(col, col.isar.collection<Product>(), r'product', id);
 }
 
 extension ProductPriceQueryWhereSort
@@ -157,14 +144,6 @@ extension ProductPriceQueryWhereSort
   QueryBuilder<ProductPrice, ProductPrice, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
-    });
-  }
-
-  QueryBuilder<ProductPrice, ProductPrice, QAfterWhere> anyIsActive() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        const IndexWhereClause.any(indexName: r'isActive'),
-      );
     });
   }
 }
@@ -235,51 +214,6 @@ extension ProductPriceQueryWhere
         upper: upperId,
         includeUpper: includeUpper,
       ));
-    });
-  }
-
-  QueryBuilder<ProductPrice, ProductPrice, QAfterWhereClause> isActiveEqualTo(
-      bool isActive) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'isActive',
-        value: [isActive],
-      ));
-    });
-  }
-
-  QueryBuilder<ProductPrice, ProductPrice, QAfterWhereClause>
-      isActiveNotEqualTo(bool isActive) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'isActive',
-              lower: [],
-              upper: [isActive],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'isActive',
-              lower: [isActive],
-              includeLower: false,
-              upper: [],
-            ));
-      } else {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'isActive',
-              lower: [isActive],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'isActive',
-              lower: [],
-              upper: [isActive],
-              includeUpper: false,
-            ));
-      }
     });
   }
 }
@@ -565,6 +499,62 @@ extension ProductPriceQueryFilter
   }
 
   QueryBuilder<ProductPrice, ProductPrice, QAfterFilterCondition>
+      productIdEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'productId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ProductPrice, ProductPrice, QAfterFilterCondition>
+      productIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'productId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ProductPrice, ProductPrice, QAfterFilterCondition>
+      productIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'productId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ProductPrice, ProductPrice, QAfterFilterCondition>
+      productIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'productId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<ProductPrice, ProductPrice, QAfterFilterCondition>
       updatedAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -625,21 +615,7 @@ extension ProductPriceQueryObject
     on QueryBuilder<ProductPrice, ProductPrice, QFilterCondition> {}
 
 extension ProductPriceQueryLinks
-    on QueryBuilder<ProductPrice, ProductPrice, QFilterCondition> {
-  QueryBuilder<ProductPrice, ProductPrice, QAfterFilterCondition> product(
-      FilterQuery<Product> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'product');
-    });
-  }
-
-  QueryBuilder<ProductPrice, ProductPrice, QAfterFilterCondition>
-      productIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'product', 0, true, 0, true);
-    });
-  }
-}
+    on QueryBuilder<ProductPrice, ProductPrice, QFilterCondition> {}
 
 extension ProductPriceQuerySortBy
     on QueryBuilder<ProductPrice, ProductPrice, QSortBy> {
@@ -688,6 +664,18 @@ extension ProductPriceQuerySortBy
   QueryBuilder<ProductPrice, ProductPrice, QAfterSortBy> sortByPriceDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'price', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ProductPrice, ProductPrice, QAfterSortBy> sortByProductId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'productId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProductPrice, ProductPrice, QAfterSortBy> sortByProductIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'productId', Sort.desc);
     });
   }
 
@@ -766,6 +754,18 @@ extension ProductPriceQuerySortThenBy
     });
   }
 
+  QueryBuilder<ProductPrice, ProductPrice, QAfterSortBy> thenByProductId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'productId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ProductPrice, ProductPrice, QAfterSortBy> thenByProductIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'productId', Sort.desc);
+    });
+  }
+
   QueryBuilder<ProductPrice, ProductPrice, QAfterSortBy> thenByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
@@ -805,6 +805,12 @@ extension ProductPriceQueryWhereDistinct
     });
   }
 
+  QueryBuilder<ProductPrice, ProductPrice, QDistinct> distinctByProductId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'productId');
+    });
+  }
+
   QueryBuilder<ProductPrice, ProductPrice, QDistinct> distinctByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updatedAt');
@@ -841,6 +847,12 @@ extension ProductPriceQueryProperty
   QueryBuilder<ProductPrice, double, QQueryOperations> priceProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'price');
+    });
+  }
+
+  QueryBuilder<ProductPrice, int, QQueryOperations> productIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'productId');
     });
   }
 

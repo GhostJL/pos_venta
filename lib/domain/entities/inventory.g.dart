@@ -22,13 +22,18 @@ const InventorySchema = CollectionSchema(
       name: r'minStock',
       type: IsarType.double,
     ),
-    r'stock': PropertySchema(
+    r'productId': PropertySchema(
       id: 1,
+      name: r'productId',
+      type: IsarType.long,
+    ),
+    r'stock': PropertySchema(
+      id: 2,
       name: r'stock',
       type: IsarType.double,
     ),
     r'updatedAt': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -38,15 +43,22 @@ const InventorySchema = CollectionSchema(
   deserialize: _inventoryDeserialize,
   deserializeProp: _inventoryDeserializeProp,
   idName: r'id',
-  indexes: {},
-  links: {
-    r'product': LinkSchema(
-      id: -5220649065710865612,
-      name: r'product',
-      target: r'Product',
-      single: true,
+  indexes: {
+    r'productId': IndexSchema(
+      id: 5580769080710688203,
+      name: r'productId',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'productId',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
     )
   },
+  links: {},
   embeddedSchemas: {},
   getId: _inventoryGetId,
   getLinks: _inventoryGetLinks,
@@ -70,8 +82,9 @@ void _inventorySerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDouble(offsets[0], object.minStock);
-  writer.writeDouble(offsets[1], object.stock);
-  writer.writeDateTime(offsets[2], object.updatedAt);
+  writer.writeLong(offsets[1], object.productId);
+  writer.writeDouble(offsets[2], object.stock);
+  writer.writeDateTime(offsets[3], object.updatedAt);
 }
 
 Inventory _inventoryDeserialize(
@@ -83,8 +96,9 @@ Inventory _inventoryDeserialize(
   final object = Inventory();
   object.id = id;
   object.minStock = reader.readDouble(offsets[0]);
-  object.stock = reader.readDouble(offsets[1]);
-  object.updatedAt = reader.readDateTime(offsets[2]);
+  object.productId = reader.readLong(offsets[1]);
+  object.stock = reader.readDouble(offsets[2]);
+  object.updatedAt = reader.readDateTime(offsets[3]);
   return object;
 }
 
@@ -98,8 +112,10 @@ P _inventoryDeserializeProp<P>(
     case 0:
       return (reader.readDouble(offset)) as P;
     case 1:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
+      return (reader.readDouble(offset)) as P;
+    case 3:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -111,12 +127,66 @@ Id _inventoryGetId(Inventory object) {
 }
 
 List<IsarLinkBase<dynamic>> _inventoryGetLinks(Inventory object) {
-  return [object.product];
+  return [];
 }
 
 void _inventoryAttach(IsarCollection<dynamic> col, Id id, Inventory object) {
   object.id = id;
-  object.product.attach(col, col.isar.collection<Product>(), r'product', id);
+}
+
+extension InventoryByIndex on IsarCollection<Inventory> {
+  Future<Inventory?> getByProductId(int productId) {
+    return getByIndex(r'productId', [productId]);
+  }
+
+  Inventory? getByProductIdSync(int productId) {
+    return getByIndexSync(r'productId', [productId]);
+  }
+
+  Future<bool> deleteByProductId(int productId) {
+    return deleteByIndex(r'productId', [productId]);
+  }
+
+  bool deleteByProductIdSync(int productId) {
+    return deleteByIndexSync(r'productId', [productId]);
+  }
+
+  Future<List<Inventory?>> getAllByProductId(List<int> productIdValues) {
+    final values = productIdValues.map((e) => [e]).toList();
+    return getAllByIndex(r'productId', values);
+  }
+
+  List<Inventory?> getAllByProductIdSync(List<int> productIdValues) {
+    final values = productIdValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'productId', values);
+  }
+
+  Future<int> deleteAllByProductId(List<int> productIdValues) {
+    final values = productIdValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'productId', values);
+  }
+
+  int deleteAllByProductIdSync(List<int> productIdValues) {
+    final values = productIdValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'productId', values);
+  }
+
+  Future<Id> putByProductId(Inventory object) {
+    return putByIndex(r'productId', object);
+  }
+
+  Id putByProductIdSync(Inventory object, {bool saveLinks = true}) {
+    return putByIndexSync(r'productId', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByProductId(List<Inventory> objects) {
+    return putAllByIndex(r'productId', objects);
+  }
+
+  List<Id> putAllByProductIdSync(List<Inventory> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'productId', objects, saveLinks: saveLinks);
+  }
 }
 
 extension InventoryQueryWhereSort
@@ -124,6 +194,14 @@ extension InventoryQueryWhereSort
   QueryBuilder<Inventory, Inventory, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<Inventory, Inventory, QAfterWhere> anyProductId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'productId'),
+      );
     });
   }
 }
@@ -190,6 +268,96 @@ extension InventoryQueryWhere
         lower: lowerId,
         includeLower: includeLower,
         upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Inventory, Inventory, QAfterWhereClause> productIdEqualTo(
+      int productId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'productId',
+        value: [productId],
+      ));
+    });
+  }
+
+  QueryBuilder<Inventory, Inventory, QAfterWhereClause> productIdNotEqualTo(
+      int productId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'productId',
+              lower: [],
+              upper: [productId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'productId',
+              lower: [productId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'productId',
+              lower: [productId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'productId',
+              lower: [],
+              upper: [productId],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Inventory, Inventory, QAfterWhereClause> productIdGreaterThan(
+    int productId, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'productId',
+        lower: [productId],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Inventory, Inventory, QAfterWhereClause> productIdLessThan(
+    int productId, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'productId',
+        lower: [],
+        upper: [productId],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Inventory, Inventory, QAfterWhereClause> productIdBetween(
+    int lowerProductId,
+    int upperProductId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'productId',
+        lower: [lowerProductId],
+        includeLower: includeLower,
+        upper: [upperProductId],
         includeUpper: includeUpper,
       ));
     });
@@ -329,6 +497,60 @@ extension InventoryQueryFilter
     });
   }
 
+  QueryBuilder<Inventory, Inventory, QAfterFilterCondition> productIdEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'productId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Inventory, Inventory, QAfterFilterCondition>
+      productIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'productId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Inventory, Inventory, QAfterFilterCondition> productIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'productId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Inventory, Inventory, QAfterFilterCondition> productIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'productId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Inventory, Inventory, QAfterFilterCondition> stockEqualTo(
     double value, {
     double epsilon = Query.epsilon,
@@ -450,20 +672,7 @@ extension InventoryQueryObject
     on QueryBuilder<Inventory, Inventory, QFilterCondition> {}
 
 extension InventoryQueryLinks
-    on QueryBuilder<Inventory, Inventory, QFilterCondition> {
-  QueryBuilder<Inventory, Inventory, QAfterFilterCondition> product(
-      FilterQuery<Product> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'product');
-    });
-  }
-
-  QueryBuilder<Inventory, Inventory, QAfterFilterCondition> productIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'product', 0, true, 0, true);
-    });
-  }
-}
+    on QueryBuilder<Inventory, Inventory, QFilterCondition> {}
 
 extension InventoryQuerySortBy on QueryBuilder<Inventory, Inventory, QSortBy> {
   QueryBuilder<Inventory, Inventory, QAfterSortBy> sortByMinStock() {
@@ -475,6 +684,18 @@ extension InventoryQuerySortBy on QueryBuilder<Inventory, Inventory, QSortBy> {
   QueryBuilder<Inventory, Inventory, QAfterSortBy> sortByMinStockDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'minStock', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Inventory, Inventory, QAfterSortBy> sortByProductId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'productId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Inventory, Inventory, QAfterSortBy> sortByProductIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'productId', Sort.desc);
     });
   }
 
@@ -529,6 +750,18 @@ extension InventoryQuerySortThenBy
     });
   }
 
+  QueryBuilder<Inventory, Inventory, QAfterSortBy> thenByProductId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'productId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Inventory, Inventory, QAfterSortBy> thenByProductIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'productId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Inventory, Inventory, QAfterSortBy> thenByStock() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'stock', Sort.asc);
@@ -562,6 +795,12 @@ extension InventoryQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Inventory, Inventory, QDistinct> distinctByProductId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'productId');
+    });
+  }
+
   QueryBuilder<Inventory, Inventory, QDistinct> distinctByStock() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'stock');
@@ -586,6 +825,12 @@ extension InventoryQueryProperty
   QueryBuilder<Inventory, double, QQueryOperations> minStockProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'minStock');
+    });
+  }
+
+  QueryBuilder<Inventory, int, QQueryOperations> productIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'productId');
     });
   }
 

@@ -1,6 +1,4 @@
 import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/category.dart';
-import 'package:pos_venta/domain/entities/supplier.dart';
 
 part 'product.g.dart';
 
@@ -13,9 +11,9 @@ class Product {
   @Index(unique: true)
   String? barcode;
 
-  final category = IsarLink<Category>();
+  int? categoryId;
 
-  final supplier = IsarLink<Supplier>();
+  int? supplierId;
 
   @Index()
   bool isWeighted = false;

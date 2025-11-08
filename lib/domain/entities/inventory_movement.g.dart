@@ -22,20 +22,30 @@ const InventoryMovementSchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'quantity': PropertySchema(
+    r'productId': PropertySchema(
       id: 1,
+      name: r'productId',
+      type: IsarType.long,
+    ),
+    r'quantity': PropertySchema(
+      id: 2,
       name: r'quantity',
       type: IsarType.double,
     ),
     r'reason': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'reason',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'type',
       type: IsarType.string,
+    ),
+    r'userId': PropertySchema(
+      id: 5,
+      name: r'userId',
+      type: IsarType.long,
     )
   },
   estimateSize: _inventoryMovementEstimateSize,
@@ -44,20 +54,7 @@ const InventoryMovementSchema = CollectionSchema(
   deserializeProp: _inventoryMovementDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {
-    r'product': LinkSchema(
-      id: -6167638384311475992,
-      name: r'product',
-      target: r'Product',
-      single: true,
-    ),
-    r'user': LinkSchema(
-      id: -5885550429250889529,
-      name: r'user',
-      target: r'User',
-      single: true,
-    )
-  },
+  links: {},
   embeddedSchemas: {},
   getId: _inventoryMovementGetId,
   getLinks: _inventoryMovementGetLinks,
@@ -88,9 +85,11 @@ void _inventoryMovementSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDateTime(offsets[0], object.createdAt);
-  writer.writeDouble(offsets[1], object.quantity);
-  writer.writeString(offsets[2], object.reason);
-  writer.writeString(offsets[3], object.type);
+  writer.writeLong(offsets[1], object.productId);
+  writer.writeDouble(offsets[2], object.quantity);
+  writer.writeString(offsets[3], object.reason);
+  writer.writeString(offsets[4], object.type);
+  writer.writeLong(offsets[5], object.userId);
 }
 
 InventoryMovement _inventoryMovementDeserialize(
@@ -102,9 +101,11 @@ InventoryMovement _inventoryMovementDeserialize(
   final object = InventoryMovement();
   object.createdAt = reader.readDateTime(offsets[0]);
   object.id = id;
-  object.quantity = reader.readDouble(offsets[1]);
-  object.reason = reader.readStringOrNull(offsets[2]);
-  object.type = reader.readString(offsets[3]);
+  object.productId = reader.readLong(offsets[1]);
+  object.quantity = reader.readDouble(offsets[2]);
+  object.reason = reader.readStringOrNull(offsets[3]);
+  object.type = reader.readString(offsets[4]);
+  object.userId = reader.readLong(offsets[5]);
   return object;
 }
 
@@ -118,11 +119,15 @@ P _inventoryMovementDeserializeProp<P>(
     case 0:
       return (reader.readDateTime(offset)) as P;
     case 1:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
       return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -134,14 +139,12 @@ Id _inventoryMovementGetId(InventoryMovement object) {
 
 List<IsarLinkBase<dynamic>> _inventoryMovementGetLinks(
     InventoryMovement object) {
-  return [object.product, object.user];
+  return [];
 }
 
 void _inventoryMovementAttach(
     IsarCollection<dynamic> col, Id id, InventoryMovement object) {
   object.id = id;
-  object.product.attach(col, col.isar.collection<Product>(), r'product', id);
-  object.user.attach(col, col.isar.collection<User>(), r'user', id);
 }
 
 extension InventoryMovementQueryWhereSort
@@ -348,6 +351,62 @@ extension InventoryMovementQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterFilterCondition>
+      productIdEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'productId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterFilterCondition>
+      productIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'productId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterFilterCondition>
+      productIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'productId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterFilterCondition>
+      productIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'productId',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -711,41 +770,69 @@ extension InventoryMovementQueryFilter
       ));
     });
   }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterFilterCondition>
+      userIdEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'userId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterFilterCondition>
+      userIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'userId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterFilterCondition>
+      userIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'userId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterFilterCondition>
+      userIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'userId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension InventoryMovementQueryObject
     on QueryBuilder<InventoryMovement, InventoryMovement, QFilterCondition> {}
 
 extension InventoryMovementQueryLinks
-    on QueryBuilder<InventoryMovement, InventoryMovement, QFilterCondition> {
-  QueryBuilder<InventoryMovement, InventoryMovement, QAfterFilterCondition>
-      product(FilterQuery<Product> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'product');
-    });
-  }
-
-  QueryBuilder<InventoryMovement, InventoryMovement, QAfterFilterCondition>
-      productIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'product', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<InventoryMovement, InventoryMovement, QAfterFilterCondition>
-      user(FilterQuery<User> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'user');
-    });
-  }
-
-  QueryBuilder<InventoryMovement, InventoryMovement, QAfterFilterCondition>
-      userIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'user', 0, true, 0, true);
-    });
-  }
-}
+    on QueryBuilder<InventoryMovement, InventoryMovement, QFilterCondition> {}
 
 extension InventoryMovementQuerySortBy
     on QueryBuilder<InventoryMovement, InventoryMovement, QSortBy> {
@@ -760,6 +847,20 @@ extension InventoryMovementQuerySortBy
       sortByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterSortBy>
+      sortByProductId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'productId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterSortBy>
+      sortByProductIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'productId', Sort.desc);
     });
   }
 
@@ -804,6 +905,20 @@ extension InventoryMovementQuerySortBy
       return query.addSortBy(r'type', Sort.desc);
     });
   }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterSortBy>
+      sortByUserId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterSortBy>
+      sortByUserIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.desc);
+    });
+  }
 }
 
 extension InventoryMovementQuerySortThenBy
@@ -832,6 +947,20 @@ extension InventoryMovementQuerySortThenBy
       thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterSortBy>
+      thenByProductId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'productId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterSortBy>
+      thenByProductIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'productId', Sort.desc);
     });
   }
 
@@ -876,6 +1005,20 @@ extension InventoryMovementQuerySortThenBy
       return query.addSortBy(r'type', Sort.desc);
     });
   }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterSortBy>
+      thenByUserId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QAfterSortBy>
+      thenByUserIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'userId', Sort.desc);
+    });
+  }
 }
 
 extension InventoryMovementQueryWhereDistinct
@@ -884,6 +1027,13 @@ extension InventoryMovementQueryWhereDistinct
       distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdAt');
+    });
+  }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QDistinct>
+      distinctByProductId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'productId');
     });
   }
 
@@ -907,6 +1057,13 @@ extension InventoryMovementQueryWhereDistinct
       return query.addDistinctBy(r'type', caseSensitive: caseSensitive);
     });
   }
+
+  QueryBuilder<InventoryMovement, InventoryMovement, QDistinct>
+      distinctByUserId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'userId');
+    });
+  }
 }
 
 extension InventoryMovementQueryProperty
@@ -921,6 +1078,12 @@ extension InventoryMovementQueryProperty
       createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
+    });
+  }
+
+  QueryBuilder<InventoryMovement, int, QQueryOperations> productIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'productId');
     });
   }
 
@@ -939,6 +1102,12 @@ extension InventoryMovementQueryProperty
   QueryBuilder<InventoryMovement, String, QQueryOperations> typeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'type');
+    });
+  }
+
+  QueryBuilder<InventoryMovement, int, QQueryOperations> userIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'userId');
     });
   }
 }

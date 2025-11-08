@@ -1,5 +1,4 @@
 import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/product.dart';
 
 part 'product_price.g.dart';
 
@@ -7,7 +6,7 @@ part 'product_price.g.dart';
 class ProductPrice {
   Id? id;
 
-  final product = IsarLink<Product>();
+  late int productId;
 
   late double price;
 
@@ -15,7 +14,6 @@ class ProductPrice {
 
   int minQty = 1;
 
-  @Index()
   bool isActive = true;
 
   DateTime updatedAt = DateTime.now();

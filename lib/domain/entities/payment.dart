@@ -7,11 +7,12 @@ part 'payment.g.dart';
 class Payment {
   Id? id;
 
-  final sale = IsarLink<Sale>();
-
   late String type; // efectivo, tarjeta, etc.
 
   late double amount;
 
   DateTime createdAt = DateTime.now();
+
+  @Backlink(to: 'payments')
+  final sale = IsarLink<Sale>();
 }

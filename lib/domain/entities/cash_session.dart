@@ -1,6 +1,4 @@
 import 'package:isar/isar.dart';
-import 'package:pos_venta/domain/entities/cash_register.dart';
-import 'package:pos_venta/domain/entities/user.dart';
 
 part 'cash_session.g.dart';
 
@@ -8,9 +6,9 @@ part 'cash_session.g.dart';
 class CashSession {
   Id? id;
 
-  final cashRegister = IsarLink<CashRegister>();
+  late int cashRegisterId;
 
-  final userOpened = IsarLink<User>();
+  late int userOpenedId;
 
   late double openingAmount;
 
