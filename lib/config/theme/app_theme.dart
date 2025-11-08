@@ -12,12 +12,10 @@ class AppTheme {
           primary: Color(0xFF007AFF),
           secondary: Color(0xFF1A1A1A),
           surface: Colors.white,
-          background: Color(0xFFFAFAFA),
           error: Color(0xFFFF3B30),
           onPrimary: Colors.white,
           onSecondary: Colors.white,
           onSurface: Color(0xFF1A1A1A),
-          onBackground: Color(0xFF1A1A1A),
         ),
 
         // ═══════════════════════════════════════════════════════════

@@ -6,7 +6,7 @@ import 'package:pos_venta/infrastructure/datasources/hive_datasource.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await HiveDatasource();
+  HiveDatasource();
   runApp(const ProviderScope(child: MainApp()));
 }
 
