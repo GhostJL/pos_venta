@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:pos_venta/presentation/screens/sign_in/widgets/sign_in_form.dart';
+import 'package:pos_venta/presentation/widgets/sign_in/sign_in_form.dart';
 
 class SignInScreen extends StatelessWidget {
   static const name = '/sign-in-screen';
